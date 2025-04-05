@@ -1,6 +1,6 @@
 const isProd = process.env.NODE_ENV === 'production'
 const baseUrl = isProd ? 'https://umeet.onrender.com' : 'http://localhost:4000'
-const nextUrl = isProd ? 'https://umeet.onrender.com' : 'http://localhost:3001'
+const nextUrl = isProd ? 'https://umeet.onrender.com' : 'http://localhost:3000'
 
 export const config = {
   socketUrl: baseUrl,
@@ -19,8 +19,10 @@ export const config = {
     autoConnect: false,
     forceNew: true,
     withCredentials: true,
+    pingTimeout: 60000,
+    pingInterval: 25000,
     extraHeaders: {
       'Access-Control-Allow-Credentials': 'true'
     }
   }
-} 
+}

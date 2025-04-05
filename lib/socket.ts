@@ -15,7 +15,9 @@ const manager = new Manager(config.socketUrl, {
   reconnectionDelay: 1000,
   reconnectionDelayMax: 5000,
   timeout: 20000,
-  transports: ['websocket']
+  transports: ['polling', 'websocket'],
+  path: '/socket.io/',
+  forceNew: true
 })
 
 const socket = manager.socket('/')

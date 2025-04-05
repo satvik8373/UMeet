@@ -26,7 +26,7 @@ if (dev) {
   dotenv.config({ path: envPath })
 }
 
-const PORT = Number(process.env.PORT) || (dev ? 4000 : 3000)
+const PORT = Number(process.env.PORT) || 4000
 
 console.log('Environment check:')
 console.log('- NODE_ENV:', process.env.NODE_ENV)
@@ -49,29 +49,29 @@ connectDB()
 
     // Enable CORS with specific origin
     const corsOrigin = dev ? 'http://localhost:3000' : 'https://umeet.onrender.com'
-    app.use(cors({
+    const corsOptions = {
       origin: corsOrigin,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       credentials: true,
       optionsSuccessStatus: 204,
       allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Credentials']
-    }))
+    }
+    app.use(cors(corsOptions))
 
     // Socket.IO server configuration
     const io = new Server(server, {
       path: '/socket.io/',
-      cors: {
-        origin: corsOrigin,
-        credentials: true
-      },
-      transports: ['polling', 'websocket']
+      cors: corsOptions,
+      transports: ['polling', 'websocket'],
+      pingTimeout: 60000,
+      pingInterval: 25000
     })
 
     // Log Socket.IO configuration
     console.log('Socket.IO Configuration:', {
       path: '/socket.io/',
       transports: ['polling', 'websocket'],
-      cors: { origin: corsOrigin, credentials: true },
+      cors: corsOptions,
       serverPort: PORT,
       environment: process.env.NODE_ENV
     })
