@@ -6,7 +6,7 @@ services:
     plan: free
     buildCommand: |
       npm install
-      npm install tailwind-scrollbar@3.1.0
+      npm audit fix --force
       npm run build
     startCommand: npm start
     envVars:
@@ -31,7 +31,7 @@ services:
     plan: standard
     buildCommand: |
       npm install
-      npm install cors@2.8.5
+      npm audit fix --force
     startCommand: node --experimental-specifier-resolution=node server.ts
     envVars:
       - key: NODE_ENV
