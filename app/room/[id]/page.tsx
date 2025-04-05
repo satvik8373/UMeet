@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import dynamic from 'next/dynamic'
-import { socket, setSocketAuth, type Socket } from '@/app/lib/socket'
-import { config } from '@/app/lib/config'
+import { socket, setSocketAuth } from '@/app/lib/socket'
+import type { Socket } from 'socket.io-client'
+import type { Message } from '@/app/components/room/Chat'
 import { FiMessageSquare, FiYoutube, FiLogOut, FiMoreVertical, FiCopy, FiCheck, FiChevronDown } from 'react-icons/fi'
 
 // Dynamic imports with loading fallbacks
@@ -23,7 +24,7 @@ const RoomHeader = dynamic(() => import('@/app/components/room/RoomHeader'), {
 
 const EnhancedChat = dynamic(() => import('@/app/components/room/EnhancedChat'), {
   ssr: false,
-  loading: () => <div className="animate-pulse h-full bg-[#1a1a1a] rounded-3xl"></div>
+  loading: () => <div className="animate-pulse h-full w-full bg-[#1a1a1a]"></div>
 })
 
 // Helper function to extract YouTube video ID from various URL formats
@@ -73,42 +74,23 @@ function extractYouTubeId(url: string): string {
   return ''
 }
 
-interface Message {
-  id: string
-  userId: string
-  userEmail: string
-  userName: string
-  text: string
-  timestamp: number
-  type: 'room' | 'youtube'
-}
-
 interface Participant {
-  userId: string
   email: string
+  socketId: string
   isHost: boolean
   isOnline: boolean
   name?: string
 }
 
-interface VideoState {
-  currentTime: number
-  isPlaying: boolean
-  videoUrl: string
-}
-
 interface RoomState {
-  participants: {
-    [userId: string]: {
-      email: string
-      socketId: string
-      isHost: boolean
-      isOnline: boolean
-      name?: string
-    }
+  participants: Record<string, Participant>
+  videoState: {
+    videoUrl: string
+    isPlaying: boolean
+    currentTime: number
+    lastUpdated: number
   }
-  videoState: VideoState
-  name?: string
+  name: string
 }
 
 // Remove the YouTubePlayer component import and replace with a simple iframe embed
@@ -225,7 +207,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   }, [params.id, session?.user?.id, session?.user?.email, status])
 
   const handleSendMessage = (text: string) => {
-    if (!socket || !session?.user?.id || !session?.user?.email || !text.trim()) return
+    if (!text.trim() || !session?.user?.id || !session?.user?.email) return
 
     const message: Message = {
       id: Math.random().toString(36).substr(2, 9),
@@ -237,14 +219,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       type: 'room'
     }
 
-    console.log('Sending message:', message)
-    socket.emit('chat-message', {
-      roomId: params.id,
-      message
-    })
-
-    // Optimistically add the message to the UI
-    setMessages(prev => [...prev, message])
+    socket.emit('chat-message', { roomId: params.id, message })
   }
 
   const handleLeaveRoom = () => {

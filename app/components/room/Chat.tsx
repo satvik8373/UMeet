@@ -4,12 +4,14 @@ import { useState, useEffect, useRef } from 'react'
 import { socket } from '../../lib/socket'
 import { FiSend } from 'react-icons/fi'
 
-interface Message {
+export interface Message {
   id: string
   userId: string
+  userEmail: string
   userName: string
   text: string
   timestamp: number
+  type: 'room' | 'youtube'
 }
 
 interface ChatProps {
@@ -48,9 +50,11 @@ export default function Chat({ roomId, userId, userName, isHost }: ChatProps) {
     const message: Message = {
       id: `${Date.now()}-${userId}`,
       userId,
+      userEmail: '',
       userName,
       text: newMessage.trim(),
       timestamp: Date.now(),
+      type: 'room',
     }
 
     socket.emit('chatMessage', { roomId, message })
