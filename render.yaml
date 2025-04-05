@@ -7,6 +7,7 @@ services:
     buildCommand: |
       rm -rf node_modules
       rm -rf .next
+      rm -rf dist
       npm cache clean --force
       npm install
       npm install postcss-nesting@12.0.2
@@ -36,10 +37,12 @@ services:
     plan: standard
     buildCommand: |
       rm -rf node_modules
+      rm -rf dist
       npm cache clean --force
       npm install
       npm install postcss-nesting@12.0.2
-    startCommand: node server.js
+      tsc --project tsconfig.server.json
+    startCommand: node dist/server.js
     envVars:
       - key: NODE_ENV
         value: production
