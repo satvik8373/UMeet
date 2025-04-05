@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  // Enable static optimization where possible
+module.exports = {
+  // Enable static optimization
   output: 'standalone',
   
   // Optimize images
@@ -71,6 +71,4 @@ const nextConfig = {
     });
     return config;
   },
-}
-
-export default nextConfig 
+} 

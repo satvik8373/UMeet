@@ -2,12 +2,10 @@
   "name": "umeet",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
-  "description": "UMeet is a real-time streaming and discussion platform that enables users to watch videos together, chat, and interact in a synchronized environment.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "node server.ts",
+    "start": "node server.js",
     "lint": "next lint"
   },
   "dependencies": {
