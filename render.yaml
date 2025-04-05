@@ -5,10 +5,8 @@ services:
     region: oregon
     plan: free
     buildCommand: |
-      npm cache clean --force
-      rm -rf node_modules
-      npm install typescript@5.4.2 @types/react@18.2.64 @types/react-dom@18.2.21
-      npm install
+      npm ci
+      npm install --save @types/react @types/react-dom @types/node typescript
       npm run build
     startCommand: npm start
     envVars:
@@ -32,11 +30,9 @@ services:
     env: node
     plan: standard
     buildCommand: |
-      npm cache clean --force
-      rm -rf node_modules
-      npm install typescript@5.4.2 @types/react@18.2.64 @types/react-dom@18.2.21
-      npm install
+      npm ci
       npm install cors@2.8.5
+      npm install --save @types/react @types/react-dom @types/node typescript
     startCommand: node --experimental-specifier-resolution=node server.ts
     envVars:
       - key: NODE_ENV
