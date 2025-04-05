@@ -5,7 +5,10 @@ services:
     region: singapore
     plan: free
     buildCommand: |
-      npm install --include=dev
+      rm -rf node_modules
+      rm -rf .next
+      npm cache clean --force
+      npm install
       npm install postcss-nesting@12.0.2
       npm run build
     startCommand: npm start
@@ -32,7 +35,9 @@ services:
     env: node
     plan: standard
     buildCommand: |
-      npm install --include=dev
+      rm -rf node_modules
+      npm cache clean --force
+      npm install
       npm install postcss-nesting@12.0.2
     startCommand: node server.js
     envVars:
