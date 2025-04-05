@@ -4,18 +4,18 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import dynamic from 'next/dynamic'
-import { socket } from '@/app/lib/socket'
+import { socket } from '../../lib/socket'
 import type { Socket } from 'socket.io-client'
-import type { Message } from '@/app/components/room/Chat'
+import type { Message } from '../../components/room/Chat'
 import { FiMessageSquare, FiYoutube, FiLogOut, FiMoreVertical, FiCopy, FiCheck, FiChevronDown } from 'react-icons/fi'
 
 // Dynamic imports with loading fallbacks
-const RoomHeader = dynamic(() => import('@/app/components/room/RoomHeader'), {
+const RoomHeader = dynamic(() => import('../../components/room/RoomHeader'), {
   loading: () => <div>Loading header...</div>,
   ssr: false
 })
 
-const EnhancedChat = dynamic(() => import('@/app/components/room/EnhancedChat'), {
+const EnhancedChat = dynamic(() => import('../../components/room/EnhancedChat'), {
   loading: () => <div>Loading chat...</div>,
   ssr: false
 })
