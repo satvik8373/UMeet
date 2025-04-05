@@ -11,7 +11,6 @@
   "dependencies": {
     "@giphy/js-fetch-api": "^5.3.0",
     "@headlessui/react": "^1.7.18",
-    "@types/bcryptjs": "^2.4.6",
     "@types/node": "20.11.19",
     "@types/react": "18.2.57",
     "@types/react-dom": "18.2.19",
@@ -39,10 +38,13 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
+    "@types/socket.io": "^3.0.2",
     "eslint": "8.56.0",
-    "eslint-config-next": "14.1.0"
+    "eslint-config-next": "14.1.0",
+    "ts-node": "^10.9.2"
   },
   "engines": {
     "node": ">=18.0.0"

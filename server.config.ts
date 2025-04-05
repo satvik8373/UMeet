@@ -1,7 +1,7 @@
 import { Server as SocketIOServer } from 'socket.io'
 import type { ServerOptions } from 'socket.io'
 import { Server as HTTPServer } from 'http'
-import { Express } from 'express'
+import type { Express } from 'express'
 
 interface ServerConfig {
   corsOrigin: string
