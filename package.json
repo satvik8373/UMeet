@@ -7,18 +7,15 @@
   "scripts": {
     "dev": "concurrently \"next dev\" \"npm run server\"",
     "build": "next build",
-    "postbuild": "node scripts/postbuild.js",
-    "start": "cross-env NODE_ENV=production node ./.next/standalone/server.js",
+    "start": "next start",
     "lint": "next lint",
-    "server": "node server.js",
-    "dev:server": "node server.js",
-    "dev:next": "next dev"
+    "server": "node --loader ts-node/esm server.ts",
+    "postbuild": "node scripts/postbuild.js"
   },
   "dependencies": {
     "@giphy/js-fetch-api": "^5.1.0",
     "@headlessui/react": "^1.7.18",
     "@prisma/client": "^5.10.2",
-    "autoprefixer": "^10.4.18",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.5",
     "emoji-picker-react": "^4.8.0",
@@ -27,7 +24,6 @@
     "mongoose": "^8.2.1",
     "next": "14.2.26",
     "next-auth": "^4.24.6",
-    "postcss": "^8.4.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.0.1",
@@ -45,15 +41,17 @@
     "@types/node": "^20.17.30",
     "@types/react": "^18.3.20",
     "@types/react-dom": "^18.3.6",
-    "@types/socket.io": "^3.0.1",
-    "@types/socket.io-client": "^1.4.36",
     "@types/uuid": "^9.0.8",
+    "autoprefixer": "^10.4.18",
     "concurrently": "^9.1.2",
-    "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.26",
+    "postcss": "^8.4.35",
     "prisma": "^5.10.2",
     "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "repository": {
     "type": "git",

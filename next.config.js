@@ -1,51 +1,66 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
+  // Enable static optimization where possible
   output: 'standalone',
-  webpack: (config, { isServer }) => {
-    // Handle punycode deprecation warning
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      punycode: false,
-    };
-
-    return config;
-  },
-  // Optimize image domains
+  
+  // Optimize images
   images: {
     domains: ['lh3.googleusercontent.com', 'avatars.githubusercontent.com'],
+    formats: ['image/avif', 'image/webp'],
   },
-  // Transpile specific modules
-  transpilePackages: ['@giphy/js-fetch-api'],
-  // Add API route handling
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:4000/api/:path*',
-        has: [
-          {
-            type: 'query',
-            key: 'auth',
-            value: undefined,
-          },
-        ],
-      },
-    ]
+  
+  // Minify HTML and optimize CSS
+  swcMinify: true,
+  
+  // Enable React strict mode for better development
+  reactStrictMode: true,
+  
+  // Optimize page loading
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
+  
+  // Cache build outputs
+  poweredByHeader: false,
+  
+  // Compress responses
+  compress: true,
+  
+  // Optimize for production
+  optimizeFonts: true,
+  
+  // Enable progressive web app features
+  experimental: {
+    optimizeCss: true,
+    scrollRestoration: true,
   },
-  // Add necessary headers
+  
+  // Configure headers for security
   async headers() {
     return [
       {
         source: '/:path*',
         headers: [
-          { key: 'Access-Control-Allow-Credentials', value: 'true' },
-          { key: 'Access-Control-Allow-Origin', value: '*' },
-          { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
-          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version' },
-        ],
-      },
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin'
+          }
+        ]
+      }
     ]
   }
 }
