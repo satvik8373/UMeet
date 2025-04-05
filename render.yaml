@@ -2,26 +2,23 @@ services:
   - type: web
     name: umeet
     env: node
-    region: oregon
+    region: singapore
     plan: free
-    buildCommand: |
-      npm ci
-      npm run typecheck
-      npm run build
+    buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: NEXTAUTH_URL
-        value: https://umeet.onrender.com
-      - key: NEXTAUTH_SECRET
-        fromGroup: umeet-secrets
       - key: MONGODB_URI
-        fromGroup: umeet-secrets
+        sync: false
+      - key: NEXTAUTH_URL
+        sync: false
+      - key: NEXTAUTH_SECRET
+        sync: false
       - key: GOOGLE_CLIENT_ID
-        fromGroup: umeet-secrets
+        sync: false
       - key: GOOGLE_CLIENT_SECRET
-        fromGroup: umeet-secrets
+        sync: false
     healthCheckPath: /api/health
     autoDeploy: true
 
@@ -30,10 +27,9 @@ services:
     env: node
     plan: standard
     buildCommand: |
-      npm ci
-      npm run build
-      tsc server.ts --outDir dist
-    startCommand: node dist/server.js
+      npm install
+      npm install cors@2.8.5
+    startCommand: node --experimental-specifier-resolution=node server.ts
     envVars:
       - key: NODE_ENV
         value: production
