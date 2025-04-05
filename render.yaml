@@ -1,0 +1,49 @@
+services:
+  - type: web
+    name: umeet
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXTAUTH_URL
+        value: https://umeet.onrender.com
+      - key: NEXTAUTH_SECRET
+        fromGroup: umeet-secrets
+      - key: MONGODB_URI
+        fromGroup: umeet-secrets
+      - key: GOOGLE_CLIENT_ID
+        fromGroup: umeet-secrets
+      - key: GOOGLE_CLIENT_SECRET
+        fromGroup: umeet-secrets
+    healthCheckPath: /api/health
+    autoDeploy: true
+
+  - type: web
+    name: umeet-socket
+    env: node
+    plan: standard
+    buildCommand: |
+      npm install
+      npm install cors@2.8.5
+    startCommand: node --experimental-specifier-resolution=node server.ts
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: PORT
+        value: 3001
+      - key: FRONTEND_URL
+        value: https://umeet.onrender.com
+      - key: NEXTAUTH_URL
+        value: https://umeet.onrender.com
+      - key: CORS_ORIGIN
+        value: https://umeet.onrender.com
+    healthCheckPath: /health
+    autoDeploy: true
+    domains:
+      - umeet-socket.onrender.com 
