@@ -11,8 +11,12 @@
     "allowJs": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["app/*"]
+    }
   },
-  "include": ["server.ts", "lib/**/*", "models/**/*"],
+  "include": ["server.ts", "server.config.ts", "app/lib/**/*", "models/**/*"],
   "exclude": ["node_modules"]
 } 

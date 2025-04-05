@@ -12,7 +12,7 @@ services:
       npm install
       npm install postcss-nesting@12.0.2
       npm run build
-    startCommand: npm start
+    startCommand: NODE_ENV=production node --experimental-specifier-resolution=node dist/server.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -28,6 +28,8 @@ services:
         sync: false
       - key: NEXT_FONT_OPTIMIZE
         value: "true"
+      - key: NODE_VERSION
+        value: "20.x"
     healthCheckPath: /api/health
     autoDeploy: true
 
@@ -42,7 +44,7 @@ services:
       npm install
       npm install postcss-nesting@12.0.2
       tsc --project tsconfig.server.json
-    startCommand: node dist/server.js
+    startCommand: NODE_ENV=production node --experimental-specifier-resolution=node dist/server.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -56,6 +58,8 @@ services:
         value: https://umeet.onrender.com
       - key: CORS_ORIGIN
         value: https://umeet.onrender.com
+      - key: NODE_VERSION
+        value: "20.x"
     healthCheckPath: /health
     autoDeploy: true
     domains:
