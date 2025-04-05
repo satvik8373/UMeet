@@ -4,27 +4,20 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import dynamic from 'next/dynamic'
-import { socket, setSocketAuth } from '@/app/lib/socket'
+import { socket } from '@/app/lib/socket'
 import type { Socket } from 'socket.io-client'
 import type { Message } from '@/app/components/room/Chat'
 import { FiMessageSquare, FiYoutube, FiLogOut, FiMoreVertical, FiCopy, FiCheck, FiChevronDown } from 'react-icons/fi'
 
 // Dynamic imports with loading fallbacks
 const RoomHeader = dynamic(() => import('@/app/components/room/RoomHeader'), {
-  ssr: false,
-  loading: () => (
-    <div className="bg-[#1a1a1a] border-b border-[#2a2a2a] p-4">
-      <div className="animate-pulse flex space-x-4">
-        <div className="h-8 w-24 bg-[#2a2a2a] rounded"></div>
-        <div className="h-8 w-48 bg-[#2a2a2a] rounded"></div>
-      </div>
-    </div>
-  )
+  loading: () => <div>Loading header...</div>,
+  ssr: false
 })
 
 const EnhancedChat = dynamic(() => import('@/app/components/room/EnhancedChat'), {
-  ssr: false,
-  loading: () => <div className="animate-pulse h-full w-full bg-[#1a1a1a]"></div>
+  loading: () => <div>Loading chat...</div>,
+  ssr: false
 })
 
 // Helper function to extract YouTube video ID from various URL formats
@@ -91,6 +84,7 @@ interface RoomState {
     lastUpdated: number
   }
   name: string
+  hostId: string
 }
 
 // Remove the YouTubePlayer component import and replace with a simple iframe embed
@@ -126,25 +120,26 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   const [activeChatType, setActiveChatType] = useState<'room' | 'youtube'>('room')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [participants, setParticipants] = useState<{ userId: string; userEmail: string; userName: string; isOnline: boolean }[]>([])
+  const [roomName, setRoomName] = useState('Room')
+  const [isHost, setIsHost] = useState(false)
+  const [videoUrl, setVideoUrl] = useState('')
+  const [youtubeVideoId, setYoutubeVideoId] = useState('')
 
   useEffect(() => {
-    if (status === 'loading' || !session?.user?.id || !session?.user?.email) return
-
-    setSocketAuth({
-      userId: session.user.id,
-      email: session.user.email,
-      name: session.user.name || session.user.email
-    })
+    if (!session?.user?.id || !session?.user?.email) return
 
     socket.connect()
     setCurrentSocket(socket)
 
-    socket.emit('join-room', {
+    const joinRoomData = {
       roomId: params.id,
       userId: session.user.id,
       email: session.user.email,
       name: session.user.name || session.user.email
-    })
+    }
+
+    socket.emit('join-room', joinRoomData)
 
     socket.on('connect_error', (error: Error) => {
       console.error('Socket connection error:', error)
@@ -159,7 +154,18 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     })
 
     socket.on('room-state', (state: RoomState) => {
+      console.log('Received room state:', state)
       setRoomState(state)
+      setRoomName(state.name || 'Room')
+      setIsHost(state.hostId === session.user.id)
+      setVideoUrl(state.videoState?.videoUrl || '')
+      setYoutubeVideoId(extractYouTubeId(state.videoState?.videoUrl || '') || '')
+      setParticipants(Object.entries(state.participants || {}).map(([userId, data]: [string, any]) => ({
+        userId,
+        userEmail: data.email,
+        userName: data.name || data.email,
+        isOnline: data.isOnline
+      })))
       setError('')
     })
 
@@ -171,8 +177,9 @@ export default function RoomPage({ params }: { params: { id: string } }) {
           console.log('Message already exists, skipping:', message.id)
           return prev
         }
-        console.log('Adding new message:', message)
-        return [...prev, message]
+        const newMessages = [...prev, message]
+        console.log('Updated messages:', newMessages)
+        return newMessages
       })
     })
 
@@ -204,40 +211,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     return () => {
       socket.disconnect()
     }
-  }, [params.id, session?.user?.id, session?.user?.email, status])
-
-  const handleSendMessage = (text: string) => {
-    if (!text.trim() || !session?.user?.id || !session?.user?.email) return
-
-    const message: Message = {
-      id: Math.random().toString(36).substr(2, 9),
-      userId: session.user.id,
-      userEmail: session.user.email,
-      userName: session.user.name || session.user.email,
-      text: text.trim(),
-      timestamp: Date.now(),
-      type: 'room'
-    }
-
-    socket.emit('chat-message', { roomId: params.id, message })
-  }
-
-  const handleLeaveRoom = () => {
-    if (!socket || !session?.user?.id) return
-    socket.emit('leave-room', {
-      roomId: params.id,
-      userId: session.user.id
-    })
-    router.push('/dashboard')
-  }
-
-  const handleCopyLink = () => {
-    const roomUrl = `${window.location.origin}/room/${params.id}`
-    navigator.clipboard.writeText(roomUrl)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-    setIsMenuOpen(false)
-  }
+  }, [params.id, session])
 
   if (status === 'loading' || !session?.user || !roomState) {
     return (
@@ -259,7 +233,50 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     )
   }
 
-  const isHost = roomState.participants[session.user.id]?.isHost || false
+  const handleSendMessage = (text: string) => {
+    if (!socket || !session?.user?.id) {
+      console.error('Socket or user session not available')
+      return
+    }
+
+    const message: Message = {
+      id: `${Date.now()}-${session.user.id}`,
+      userId: session.user.id,
+      userEmail: session.user.email || '',
+      userName: session.user.name || session.user.email || 'Anonymous',
+      text,
+      timestamp: Date.now(),
+      type: 'room'
+    }
+
+    console.log('Sending message:', message)
+    
+    // First update local state
+    setMessages(prev => [...prev, message])
+    
+    // Then emit to server
+    socket.emit('chat-message', {
+      roomId: params.id,
+      message
+    })
+  }
+
+  const handleLeaveRoom = () => {
+    if (!socket || !session?.user?.id) return
+    socket.emit('leave-room', {
+      roomId: params.id,
+      userId: session.user.id
+    })
+    router.push('/dashboard')
+  }
+
+  const handleCopyLink = () => {
+    const roomUrl = `${window.location.origin}/room/${params.id}`
+    navigator.clipboard.writeText(roomUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+    setIsMenuOpen(false)
+  }
 
   return (
     <div className="h-screen flex flex-col bg-[#1a1a1a] overflow-hidden">
@@ -345,10 +362,10 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       <div className="hidden lg:block">
         <RoomHeader
           roomId={params.id}
-          roomName={roomState?.name || 'Room'}
+          roomName={roomName}
           isHost={isHost}
-          participantCount={Object.keys(roomState?.participants || {}).length}
-          videoUrl={roomState?.videoState.videoUrl}
+          participantCount={participants.length}
+          videoUrl={videoUrl}
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           onLeaveRoom={handleLeaveRoom}
         />
@@ -372,15 +389,10 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                   <EnhancedChat
                     messages={messages}
                     onSendMessage={handleSendMessage}
-                    currentUserEmail={session.user.email!}
-                    currentUserName={session.user.name || session.user.email!}
-                    youtubeVideoId={videoId}
-                    participants={Object.entries(roomState.participants).map(([userId, data]) => ({
-                      userId,
-                      userEmail: data.email,
-                      userName: data.name || data.email,
-                      isOnline: data.isOnline
-                    }))}
+                    currentUserEmail={session?.user?.email || ''}
+                    currentUserName={session?.user?.name || 'Anonymous'}
+                    youtubeVideoId={youtubeVideoId}
+                    participants={participants}
                   />
                 </div>
               </div>
