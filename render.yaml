@@ -31,9 +31,9 @@ services:
     plan: standard
     buildCommand: |
       npm ci
-      npm run typecheck
-      npm install cors@2.8.5
-    startCommand: node --loader ts-node/esm server.ts
+      npm run build
+      tsc server.ts --outDir dist
+    startCommand: node dist/server.js
     envVars:
       - key: NODE_ENV
         value: production
