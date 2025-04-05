@@ -19,7 +19,7 @@ const nextConfig = {
   // Optimize page loading
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   
-  // Cache build outputs
+  // Cache outputs
   poweredByHeader: false,
   
   // Compress responses
@@ -30,17 +30,27 @@ const nextConfig = {
   
   // Configure experimental features
   experimental: {
-    // Disable optimizeCss since we're using critters directly
-    optimizeCss: false,
+    // Enable modern optimizations
+    optimizePackageImports: ['@headlessui/react', 'react-icons'],
     // Enable scroll restoration
     scrollRestoration: true,
-    // Improve static generation
-    isrMemoryCacheSize: 0,
-    // Ensure proper edge runtime handling
-    runtime: 'nodejs',
+  },
+
+  // Configure webpack for CSS optimization
+  webpack: (config, { dev, isServer }) => {
+    // Optimize CSS only in production
+    if (!dev && !isServer) {
+      config.optimization.splitChunks.cacheGroups.styles = {
+        name: 'styles',
+        test: /\.(css|scss)$/,
+        chunks: 'all',
+        enforce: true,
+      };
+    }
+    return config;
   },
   
-  // Configure headers for security
+  // Configure headers for security and font loading
   async headers() {
     return [
       {
@@ -65,6 +75,10 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin'
+          },
+          {
+            key: 'Link',
+            value: '<https://fonts.googleapis.com>; rel=preconnect; crossorigin=anonymous'
           }
         ]
       }

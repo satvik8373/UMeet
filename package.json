@@ -5,13 +5,12 @@
   "type": "module",
   "description": "UMeet is a real-time streaming and discussion platform that enables users to watch videos together, chat, and interact in a synchronized environment.",
   "scripts": {
-    "dev": "concurrently \"next dev\" \"npm run server\"",
-    "build": "next build",
-    "start": "next start",
+    "dev": "next dev",
+    "build": "NODE_ENV=production next build && tsc --project tsconfig.server.json",
+    "start": "node .next/standalone/server.js",
+    "start:prod": "NODE_ENV=production node .next/standalone/server.js",
     "lint": "next lint",
-    "server": "node --loader ts-node/esm server.ts",
-    "postbuild": "node scripts/postbuild.js",
-    "typecheck": "tsc --noEmit"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@giphy/js-fetch-api": "^5.1.0",
