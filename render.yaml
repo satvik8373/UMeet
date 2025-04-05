@@ -6,7 +6,7 @@ services:
     plan: free
     buildCommand: |
       npm ci
-      npm install --save @types/react @types/react-dom @types/node typescript
+      npm run typecheck
       npm run build
     startCommand: npm start
     envVars:
@@ -31,9 +31,9 @@ services:
     plan: standard
     buildCommand: |
       npm ci
+      npm run typecheck
       npm install cors@2.8.5
-      npm install --save @types/react @types/react-dom @types/node typescript
-    startCommand: node --experimental-specifier-resolution=node server.ts
+    startCommand: node --loader ts-node/esm server.ts
     envVars:
       - key: NODE_ENV
         value: production
