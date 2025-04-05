@@ -4,7 +4,7 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: npm install && npm run build
+    buildCommand: npm ci && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -27,7 +27,7 @@ services:
     env: node
     plan: standard
     buildCommand: |
-      npm install
+      npm ci
       npm install cors@2.8.5
     startCommand: node --experimental-specifier-resolution=node server.ts
     envVars:
