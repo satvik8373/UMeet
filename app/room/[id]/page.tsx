@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import dynamic from 'next/dynamic'
-import { socket, setSocketAuth, type Socket } from '@/lib/socket'
-import { config } from '@/lib/config'
+import { socket, setSocketAuth, type Socket } from '@/app/lib/socket'
+import { config } from '@/app/lib/config'
 import { FiMessageSquare, FiYoutube, FiLogOut, FiMoreVertical, FiCopy, FiCheck, FiChevronDown } from 'react-icons/fi'
 
 // Dynamic imports with loading fallbacks

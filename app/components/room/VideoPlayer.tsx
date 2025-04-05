@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import ReactPlayer from 'react-player'
-import { socket } from '@/lib/socket'
+import { socket } from '../../lib/socket'
 import { FiPlay, FiPause, FiLink } from 'react-icons/fi'
 
 interface VideoPlayerProps {

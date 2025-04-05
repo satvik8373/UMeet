@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { socket } from '@/lib/socket'
+import { socket } from '../../lib/socket'
 import { FiSend } from 'react-icons/fi'
 
 interface Message {
@@ -76,35 +76,9 @@ export default function Chat({ roomId, userId, userName, isHost }: ChatProps) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#1a1a1a]">
-      {/* Chat header with tabs */}
-      <div className="p-4 border-b border-[#2a2a2a]">
-        <div className="flex space-x-6">
-          <button
-            onClick={() => setActiveTab('chat')}
-            className={`text-lg font-semibold transition-all duration-200 ${
-              activeTab === 'chat'
-                ? 'text-white relative after:absolute after:bottom-[-1rem] after:left-0 after:w-full after:h-0.5 after:bg-[#00a8ff] after:rounded-full'
-                : 'text-gray-400 hover:text-gray-300'
-            }`}
-          >
-            Chat
-          </button>
-          <button
-            onClick={() => setActiveTab('youtube')}
-            className={`text-lg font-semibold transition-all duration-200 ${
-              activeTab === 'youtube'
-                ? 'text-white relative after:absolute after:bottom-[-1rem] after:left-0 after:w-full after:h-0.5 after:bg-[#00a8ff] after:rounded-full'
-                : 'text-gray-400 hover:text-gray-300'
-            }`}
-          >
-            YouTube
-          </button>
-        </div>
-      </div>
-
-      {/* Messages area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin scrollbar-thumb-[#2a2a2a] scrollbar-track-transparent">
+    <div className="flex flex-col h-full bg-[#1a1a1a] rounded-xl overflow-hidden">
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-[#3a3a3a] scrollbar-track-transparent">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -169,4 +143,4 @@ export default function Chat({ roomId, userId, userName, isHost }: ChatProps) {
       </div>
     </div>
   )
-} 
+}

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authConfig } from '@/app/api/auth/auth.config'
-import { connectDB } from '@/lib/db'
+import { connectDB } from '../../../lib/db'
 import User from '@/models/User'
 
 export async function PUT(request: Request) {
