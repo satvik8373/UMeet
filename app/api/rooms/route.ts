@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { connectDB } from '../../lib/db'
-import Room from '@/models/Room'
+import Room from '../../../models/Room'
 import { authConfig } from '../auth/auth.config'
 
 export async function POST(request: Request) {
