@@ -5,7 +5,8 @@ services:
     region: singapore
     plan: free
     buildCommand: |
-      npm ci
+      npm install
+      npm install tailwind-scrollbar@3.1.0
       npm run build
     startCommand: npm start
     envVars:
@@ -29,7 +30,7 @@ services:
     env: node
     plan: standard
     buildCommand: |
-      npm ci
+      npm install
       npm install cors@2.8.5
     startCommand: node --experimental-specifier-resolution=node server.ts
     envVars:
