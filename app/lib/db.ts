@@ -15,20 +15,20 @@ config({ path: envPath })
 
 const MONGODB_URI = process.env.MONGODB_URI
 
-if (!MONGODB_URI) {
-  console.error('❌ MONGODB_URI environment variable is not set')
-  console.error('Please make sure you have a .env.local file with MONGODB_URI defined')
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local')
+// Only throw error at runtime, not during build
+if (!MONGODB_URI && process.env.NODE_ENV !== 'production') {
+  console.warn('⚠️ MONGODB_URI environment variable is not set')
+  console.warn('Database connections will fail at runtime')
 }
 
 // Encode special characters in the connection string
-const encodedUri = MONGODB_URI.replace(
+const encodedUri = MONGODB_URI ? MONGODB_URI.replace(
   /mongodb\+srv:\/\/([^:]+):([^@]+)@/,
   (_, username, password) => {
     const encodedPassword = encodeURIComponent(password)
     return `mongodb+srv://${username}:${encodedPassword}@`
   }
-)
+) : ''
 
 // Define a type for the cached mongoose connection
 interface MongooseCache {
@@ -49,6 +49,11 @@ if (!cached) {
 
 export async function connectDB() {
   try {
+    // Check if MONGODB_URI is available
+    if (!MONGODB_URI || !encodedUri) {
+      throw new Error('MONGODB_URI is not defined. Please set it in your environment variables.')
+    }
+
     if (cached.conn) {
       console.log('✅ Using cached database connection')
       return cached.conn

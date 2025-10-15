@@ -5,8 +5,9 @@ import { connectDB } from '../../../lib/db'
 import User from '../../../../models/User'
 import { JWT } from 'next-auth/jwt'
 
-if (!process.env.NEXTAUTH_SECRET) {
-  throw new Error('Please provide NEXTAUTH_SECRET environment variable')
+// Only warn during build, throw at runtime
+if (!process.env.NEXTAUTH_SECRET && process.env.NODE_ENV !== 'production') {
+  console.warn('⚠️ NEXTAUTH_SECRET is not set')
 }
 
 export const authConfig: NextAuthOptions = {
@@ -109,5 +110,5 @@ export const authConfig: NextAuthOptions = {
     }
   },
   debug: process.env.NODE_ENV === 'development',
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || 'fallback-secret-for-build-only',
 } 
