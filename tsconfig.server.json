@@ -1,8 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
     "target": "ES2020",
     "lib": ["ES2020"],
     "outDir": "dist",
@@ -11,12 +11,8 @@
     "allowJs": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["app/*"]
-    }
+    "skipLibCheck": true
   },
-  "include": ["server.ts", "server.config.ts", "app/lib/**/*", "models/**/*"],
-  "exclude": ["node_modules", ".next", "dist"]
-}
+  "include": ["server.ts", "lib/**/*", "models/**/*"],
+  "exclude": ["node_modules"]
+} 

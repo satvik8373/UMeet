@@ -4,14 +4,7 @@ import './globals.css'
 import { Providers } from './providers'
 import IOSInstallPrompt from './components/IOSInstallPrompt'
 
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  adjustFontFallback: true,
-  preload: true,
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-inter',
-})
+const inter = Inter({ subsets: ['latin'] })
 
 export const viewport = {
   width: 'device-width',
@@ -77,7 +70,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -88,7 +81,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <meta name="apple-mobile-web-app-title" content="UMeet" />
       </head>
-      <body className={`${inter.className} antialiased`}>
+      <body className={inter.className}>
         <Providers>{children}</Providers>
         <IOSInstallPrompt />
       </body>

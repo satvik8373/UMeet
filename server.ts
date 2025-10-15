@@ -77,11 +77,6 @@ connectDB()
     })
 
     // Health check endpoint
-    app.get('/health', (req, res) => {
-      res.json({ status: 'ok' })
-    })
-
-    // Health check endpoint
     app.get('/api/health', async (req: Request, res: Response) => {
       try {
         const isMongoConnected = mongoose.connection.readyState === 1
