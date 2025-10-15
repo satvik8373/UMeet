@@ -4,6 +4,8 @@ import { connectDB } from '../../lib/db'
 import Room from '@/models/Room'
 import { authConfig } from '../auth/auth.config'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authConfig)

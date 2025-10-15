@@ -1,34 +1,22 @@
 import mongoose from 'mongoose'
-import { config } from 'dotenv'
-import { fileURLToPath } from 'url'
-import { dirname, join } from 'path'
-import { resolve } from 'path'
 
-// Get directory name for ES modules
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-// Load environment variables from .env.local
-const envPath = resolve(process.cwd(), '.env.local')
-console.log('Loading environment variables from:', envPath)
-config({ path: envPath })
-
+// Get MongoDB URI - will be undefined during build, that's okay
 const MONGODB_URI = process.env.MONGODB_URI
 
-// Only throw error at runtime, not during build
-if (!MONGODB_URI && process.env.NODE_ENV !== 'production') {
-  console.warn('⚠️ MONGODB_URI environment variable is not set')
-  console.warn('Database connections will fail at runtime')
-}
-
 // Encode special characters in the connection string
-const encodedUri = MONGODB_URI ? MONGODB_URI.replace(
-  /mongodb\+srv:\/\/([^:]+):([^@]+)@/,
-  (_, username, password) => {
-    const encodedPassword = encodeURIComponent(password)
-    return `mongodb+srv://${username}:${encodedPassword}@`
+function getEncodedUri(): string {
+  if (!MONGODB_URI) {
+    return ''
   }
-) : ''
+  
+  return MONGODB_URI.replace(
+    /mongodb\+srv:\/\/([^:]+):([^@]+)@/,
+    (_, username, password) => {
+      const encodedPassword = encodeURIComponent(password)
+      return `mongodb+srv://${username}:${encodedPassword}@`
+    }
+  )
+}
 
 // Define a type for the cached mongoose connection
 interface MongooseCache {
@@ -49,6 +37,8 @@ if (!cached) {
 
 export async function connectDB() {
   try {
+    const encodedUri = getEncodedUri()
+    
     // Check if MONGODB_URI is available
     if (!MONGODB_URI || !encodedUri) {
       throw new Error('MONGODB_URI is not defined. Please set it in your environment variables.')
