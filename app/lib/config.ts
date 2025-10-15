@@ -1,9 +1,9 @@
 const isProd = process.env.NODE_ENV === 'production'
-const baseUrl = isProd ? 'https://umeet.onrender.com' : 'http://localhost:4000'
-const nextUrl = isProd ? 'https://umeet.onrender.com' : 'http://localhost:3000'
+const defaultSocketUrl = isProd ? 'https://umeet-socket.onrender.com' : 'http://localhost:4000'
+const nextUrl = isProd ? process.env.NEXTAUTH_URL || 'https://u-meet-aancgj7mr-satvik8373s-projects.vercel.app' : 'http://localhost:3000'
 
 export const config = {
-  socketUrl: baseUrl,
+  socketUrl: process.env.NEXT_PUBLIC_SOCKET_URL || defaultSocketUrl,
   nextAuthUrl: process.env.NEXTAUTH_URL || nextUrl,
   env: process.env.NODE_ENV || 'development',
   socketOptions: {

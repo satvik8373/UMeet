@@ -48,9 +48,26 @@ connectDB()
     const server = createServer(app)
 
     // Enable CORS with specific origin
-    const corsOrigin = dev ? 'http://localhost:3000' : 'https://umeet.onrender.com'
+    const allowedOrigins = dev 
+      ? ['http://localhost:3000'] 
+      : [
+          'https://umeet.onrender.com',
+          'https://u-meet-aancgj7mr-satvik8373s-projects.vercel.app',
+          process.env.FRONTEND_URL || process.env.NEXTAUTH_URL
+        ].filter(Boolean)
+    
     const corsOptions = {
-      origin: corsOrigin,
+      origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true)
+        
+        if (allowedOrigins.includes(origin)) {
+          callback(null, true)
+        } else {
+          console.warn('CORS blocked origin:', origin)
+          callback(new Error('Not allowed by CORS'))
+        }
+      },
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       credentials: true,
       optionsSuccessStatus: 204,
